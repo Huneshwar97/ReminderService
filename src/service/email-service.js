@@ -27,6 +27,7 @@ const fetchPendingEmails = async (timestamp) => {
 
 const createNotifiaction = async (data) => {
     try {
+        
         const response = await repo.create(data);
         return response;
     } catch (error) {
@@ -44,9 +45,35 @@ const updateTicket = async (ticketId,data) => {
     }
 }
 
+
+const subscribeEvents = async (payload) => {
+    try {
+        let service = payload.service;
+        let data = payload.data;
+        console.log('payload',payload)
+        switch(service){
+            case 'CREATE_TICKET':
+                await createNotifiaction(data);
+                break;
+            case 'SEND_BASIC_MAIL':
+                await sendBasicEmail(data);
+                break;
+            default:
+                console.log('No valid event recived');
+                break;
+
+        }
+        //console.log("Inside service layer", data);
+    } catch (error) {
+        throw error;
+    }
+    
+}
+
 module.exports = {
     sendBasicEmail,
     fetchPendingEmails,
     createNotifiaction,
-    updateTicket
+    updateTicket,
+    subscribeEvents
 }
